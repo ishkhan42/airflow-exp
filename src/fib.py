@@ -20,7 +20,7 @@ def calculate_nth_fibonacci(**kwargs):
 
 
 @dag(
-    dag_id="update_urls_manually",
+    dag_id="fibonacci_dag",
     schedule=None,
     start_date=datetime(2023, 1, 1),
     catchup=False,
