@@ -34,6 +34,8 @@ def calculate_nth_fibonacci(**kwargs):
         )
     },
 )
-def manual_update():
+def dager():
     calculate_nth_fibonacci()
 
+
+d = dager()
