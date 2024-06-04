@@ -150,18 +150,6 @@ if k8s:
 
         third_task = non_root_task()
 
-        executor_config_other_ns = {
-            "pod_override": k8s.V1Pod(
-                metadata=k8s.V1ObjectMeta(namespace="test-namespace", labels={'release': 'stable'})
-            )
-        }
-
-        @task(executor_config=executor_config_other_ns)
-        def other_namespace_task():
-            print_stuff()
-
-        other_ns_task = other_namespace_task()
-
         # You can also change the base image, here we used the worker image for demonstration.
         # Note that the image must have the same configuration as the
         # worker image. Could be that you want to run this task in a special docker image that has a zip
@@ -229,4 +217,4 @@ if k8s:
 
         four_task = task_with_resource_limits()
 
-        start_task >> [volume_task, other_ns_task, sidecar_task] >> third_task >> [base_image_task, four_task]
+        start_task >> [volume_task, sidecar_task] >> third_task >> [base_image_task, four_task]
