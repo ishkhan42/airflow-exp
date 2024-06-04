@@ -1,5 +1,5 @@
-from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+from airflow.decorators import dag, task
+from airflow.models.param import Param
 from datetime import datetime
 
 def calculate_fibonacci(n):
@@ -10,14 +10,30 @@ def calculate_fibonacci(n):
     else:
         return calculate_fibonacci(n-1) + calculate_fibonacci(n-2)
 
+@task(
+    task_id="calculate_nth_fibonacci"
+)
 def calculate_nth_fibonacci(**kwargs):
-    n = kwargs['dag_run'].conf.get('n')
+    n = kwargs['params']["index"]
     result = calculate_fibonacci(n)
     print(f"The {n}th Fibonacci number is: {result}")
 
-with DAG('fibonacci_dag', start_date=datetime(2022, 1, 1), schedule_interval=None) as dag:
-    calculate_task = PythonOperator(
-        task_id='calculate_fibonacci',
-        python_callable=calculate_nth_fibonacci,
-        provide_context=True
-    )
+
+@dag(
+    dag_id="update_urls_manually",
+    schedule=None,
+    start_date=datetime(2023, 1, 1),
+    catchup=False,
+    tags=["cloudav", "urls"],
+    max_active_runs=1,
+    params={
+        "index": Param(
+            description="Index of the Fibonacci number to calculate",
+            default=10,
+            type='integer'
+        )
+    },
+)
+def manual_update():
+    calculate_nth_fibonacci()
+
